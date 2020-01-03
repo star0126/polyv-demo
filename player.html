@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>polyv视频播放器</title>
+</head>
+<body>
+<h2>polyv视频播放器</h2>
+<div>
+    <div id="player"></div>
+</div>
+</body>
+<script src="//player.polyv.net/script/player.js"></script>
+<script>
+    var player = polyvPlayer({
+        wrap: '#player',  //需要载入播放器的DOM元素或css选择器
+        width: 600,     //视频宽
+        vid: '', //待播放视频在保利威的唯一标识 vid
+    });
+</script>
+</html>

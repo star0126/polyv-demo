@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>polyv视频上传</title>
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+<h2>保利威视频上传</h2>
+<div>
+    <div>
+        <label>上传钥匙：</label>
+        <input type="text" id="writetoken" name="writetoken" value="" >
+    </div>
+    <div>
+        <label>标题：</label>
+        <input type="text" id="title" name="title" value="">
+    </div>
+    <div>
+        <label>标签：</label>
+        <input type="text" id="tag" name="tag" value="">
+    </div>
+    <div>
+        <label>描述：</label>
+        <textarea id="desc"></textarea>
+    </div>
+    <div>
+        <label>上传的视频：</label>
+        <input id="file" type="file" name="file" accept="audio/mp4,video/mp4" value="">
+    </div>
+    <input type="button" value="上传" id="but">
+</div>
+
+</body>
+<script>
+
+    $(function () {
+        $("#but").click(function () {
+            //获取相关信息
+            var writetoken = $("#writetoken").val();
+            var title = $("#title").val();
+            var tag = $("#tag").val();
+            var desc = $("#desc").val();
+            var file = $("#file")[0].files[0];
+            //拼接所需的字符
+            var JSONRPC = "{'title':'"+title+"','tag':'"+tag+"','desc':'"+desc+"'}";
+            var formData = new FormData();
+            formData.append("writetoken",writetoken);
+            formData.append("JSONRPC",JSONRPC);
+            formData.append("Filedata",file);
+            //异步请求，上传视频
+            $.ajax({
+                url: "http://v.polyv.net/uc/services/rest?method=uploadfile", //视频上传接口，固定值
+                type: "post",
+                dataType: "json",
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
+                success:function (data) {
+                    //获取返回参数信息
+                    var sign = data.error;  //上传状态标识
+                    var dt = data.data[0];  //上传返回数据集，因为是传一个所以取0
+                    var vid = dt.vid;   //vid 视频在保利威唯一标识码
+                    var md5checksum = dt.md5checksum;
+                    var status = dt.status;
+                    var ptime = dt.ptime;
+                    var title = dt.title;
+                    var info = "{[状态码："+sign+"],[视频ID："+vid+"]，[视频状态："+status+"]，" +
+                        "[上传时间："+ptime+"],[标题："+title+"],[源文件MD5值："+md5checksum+"]}";
+                    //弹窗显示上传信息
+                    alert(info);
+                    if (sign==0){
+                        alert("上传成功！");
+                    }else {
+                        alert("上传有问题，请根据状态码去排查！");
+                    }
+                },
+                error:function (data) {
+                    alert("上传失败！");
+                }
+            });
+        });
+    });
+</script>
+</html>
